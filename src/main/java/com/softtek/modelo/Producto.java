@@ -27,23 +27,12 @@ public class Producto {
 
     @Override
     public String toString() {
-        return "\nProducto{" +
+        return "Producto{" +
                 "idProducto=" + idProducto +
                 ", nombreProducto='" + nombreProducto + '\'' +
+                ", categoria='" + idCategoria + '\'' +
                 ", precioUnitario=" + precioUnitario +
                 ", unidadesStock=" + unidadesStock +
                 '}';
-    }
-
-    public Producto(String nombreProducto, int idProveedor, int idCategoria, String cantidadPorUnidad, double precioUnitario, int unidadesStock, int unidadesPedido, int nivelReorden, int discontinuidad) {
-        this.nombreProducto = nombreProducto;
-        this.idProveedor = idProveedor;
-        this.idCategoria = idCategoria;
-        this.cantidadPorUnidad = cantidadPorUnidad;
-        this.precioUnitario = precioUnitario;
-        this.unidadesStock = unidadesStock;
-        this.unidadesPedido = unidadesPedido;
-        this.nivelReorden = nivelReorden;
-        this.discontinuidad = discontinuidad;
     }
 }

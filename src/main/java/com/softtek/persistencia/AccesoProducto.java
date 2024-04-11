@@ -7,17 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccesoProducto extends Conexion {
-    public AccesoProducto(){
-        try {
-            abrirConexion();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean create(Producto p) throws SQLException {
+    public boolean create(Producto p) throws SQLException, ClassNotFoundException {
+        abrirConexion();
         PreparedStatement pstmt;
         String sql = "INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -34,66 +25,79 @@ public class AccesoProducto extends Conexion {
         pstmt.setInt(10, p.getDiscontinuidad());
 
         if(pstmt.executeUpdate()>0){
+            pstmt.close();
+            miConexion.close();
             return true;
         }
+        pstmt.close();
+        miConexion.close();
         return false;
     }
 
-    public List<Producto> read() throws SQLException {
-        Statement sentencia;
-        ResultSet resultado;
+    public List<Producto> read() throws SQLException, ClassNotFoundException {
+        abrirConexion();
+        Statement stmt;
+        ResultSet rs;
         String sql = "SELECT * FROM products";
         List<Producto> productos = new ArrayList<>();
 
-        sentencia = miConexion.createStatement();
-        resultado = sentencia.executeQuery(sql);
+        stmt = miConexion.createStatement();
+        rs = stmt.executeQuery(sql);
 
-        while (resultado.next()){
-            productos.add(new Producto(resultado.getInt("product_id"),
-                    resultado.getString("product_name"),
-                    resultado.getInt("supplier_id"),
-                    resultado.getInt("category_id"),
-                    resultado.getString("quantity_per_unit"),
-                    resultado.getDouble("unit_price"),
-                    resultado.getInt("units_in_stock"),
-                    resultado.getInt("units_on_order"),
-                    resultado.getInt("reorder_level"),
-                    resultado.getInt("discontinued")));
+        while (rs.next()){
+            productos.add(new Producto(rs.getInt("product_id"),
+                    rs.getString("product_name"),
+                    rs.getInt("supplier_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("quantity_per_unit"),
+                    rs.getDouble("unit_price"),
+                    rs.getInt("units_in_stock"),
+                    rs.getInt("units_on_order"),
+                    rs.getInt("reorder_level"),
+                    rs.getInt("discontinued")));
         }
+        rs.close();
+        stmt.close();
+        miConexion.close();
         return productos;
     }
 
-    public Producto getProduct(int idProducto) throws SQLException {
+    public Producto getProduct(int idProducto) throws SQLException, ClassNotFoundException {
+        abrirConexion();
         Producto producto = null;
         PreparedStatement pstmt;
-        ResultSet resultado;
+        ResultSet rs;
         String sql = "SELECT * FROM products WHERE product_id = ?";
 
         pstmt = miConexion.prepareStatement(sql);
         pstmt.setInt(1, idProducto);
-        resultado = pstmt.executeQuery();
+        rs = pstmt.executeQuery();
 
-        while (resultado.next()){
-            producto = new Producto(resultado.getInt("product_id"),
-                    resultado.getString("product_name"),
-                    resultado.getInt("supplier_id"),
-                    resultado.getInt("category_id"),
-                    resultado.getString("quantity_per_unit"),
-                    resultado.getDouble("unit_price"),
-                    resultado.getInt("units_in_stock"),
-                    resultado.getInt("units_on_order"),
-                    resultado.getInt("reorder_level"),
-                    resultado.getInt("discontinued"));
+        while (rs.next()){
+            producto = new Producto(rs.getInt("product_id"),
+                    rs.getString("product_name"),
+                    rs.getInt("supplier_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("quantity_per_unit"),
+                    rs.getDouble("unit_price"),
+                    rs.getInt("units_in_stock"),
+                    rs.getInt("units_on_order"),
+                    rs.getInt("reorder_level"),
+                    rs.getInt("discontinued"));
         }
+        rs.close();
+        pstmt.close();
+        miConexion.close();
         return producto;
     }
 
-    public boolean update(int idProducto, Producto p) throws SQLException {
+    public boolean update(Producto p) throws SQLException, ClassNotFoundException {
+        abrirConexion();
         PreparedStatement pstmt;
         String sql = "UPDATE products SET product_id = ?, product_name = ?, supplier_id = ?, category_id = ?, quantity_per_unit = ?, unit_price = ?, units_in_stock = ?, units_on_order = ?, reorder_level = ?, discontinued = ? WHERE product_id = ?";
 
         pstmt = miConexion.prepareStatement(sql);
-        pstmt.setInt(1, idProducto);
+        pstmt.setInt(1, p.getIdProducto());
         pstmt.setString(2, p.getNombreProducto());
         pstmt.setInt(3, p.getIdProveedor());
         pstmt.setInt(4, p.getIdCategoria());
@@ -103,24 +107,32 @@ public class AccesoProducto extends Conexion {
         pstmt.setInt(8, p.getUnidadesPedido());
         pstmt.setInt(9, p.getNivelReorden());
         pstmt.setInt(10, p.getDiscontinuidad());
-        pstmt.setInt(11, idProducto);
+        pstmt.setInt(11, p.getIdProducto());
 
         if (pstmt.executeUpdate()>0){
+            pstmt.close();
+            miConexion.close();
             return true;
         }
+        pstmt.close();
+        miConexion.close();
         return false;
     }
 
-    public boolean delete(int idProducto) throws SQLException {
+    public boolean delete(int idProducto) throws SQLException, ClassNotFoundException {
+        abrirConexion();
         PreparedStatement pstmt;
         String sql = "DELETE FROM products WHERE product_id = ?";
 
         pstmt = miConexion.prepareStatement(sql);
         pstmt.setInt(1, idProducto);
         if (pstmt.executeUpdate()>0){
+            pstmt.close();
+            miConexion.close();
             return true;
         }
+        pstmt.close();
+        miConexion.close();
         return false;
     }
-
 }
